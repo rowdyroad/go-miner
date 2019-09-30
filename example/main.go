@@ -16,7 +16,7 @@ func main() {
 
 	for {
 		tt := time.Now()
-		hash, nonce := c.GetHashAndNonce(10*time.Second, []byte("hello"))
+		hash, nonce := c.GetHashAndNonce(10*time.Minute, []byte("hello"))
 		checkHash := sha256.Sum256(append([]byte("hello"), nonce...))
 		log.Println("OK", time.Now().Sub(tt), hash, checkHash)
 	}

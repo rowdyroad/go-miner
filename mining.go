@@ -23,13 +23,12 @@ func NewMiner(dataLength int, rateDuration time.Duration, f func([]byte) []byte)
 		hashFunc:     f,
 		rand:         rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
-	x.rate = x.getRate()
 	return &x
 }
 
 //GetHashAndNonce get result hash and nonce
 func (c *Miner) GetHashAndNonce(duration time.Duration, data []byte) ([]byte, []byte) {
-	rate := duration.Nanoseconds() / c.rateDuration.Nanoseconds() * c.rate
+	rate := duration.Nanoseconds() / c.rateDuration.Nanoseconds() * c.getRate()
 	bits := int(math.Floor(math.Log2(float64(rate))))
 	nonce := make([]byte, c.dataLength-len(data))
 	for {
@@ -55,6 +54,13 @@ func (c *Miner) GetHashAndNonce(duration time.Duration, data []byte) ([]byte, []
 		}
 	}
 	return nil, nil
+}
+
+func (c *Miner) GetRate() int64 {
+	if c.rate == 0 {
+		c.rate = c.getRate()
+	}
+	return c.rate
 }
 
 func (c *Miner) getRate() int64 {
