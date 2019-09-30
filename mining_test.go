@@ -13,6 +13,9 @@ func TestMain(t *testing.T) {
 		hash := sha256.Sum256(s)
 		return hash[:]
 	})
+
+	t.Log("Rate:", c.GetRate())
+	t.Log("Bits:", c.GetBits(10*time.Second))
 	tt := time.Now()
 	hash, nonce := c.GetHashAndNonce(10*time.Second, []byte("hello"))
 	assert.Equal(t, time.Now().Unix()-tt.Unix() > 1, true, time.Now().Unix(), tt.Unix())
