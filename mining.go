@@ -3,6 +3,7 @@ package miner
 import (
 	"math"
 	"math/rand"
+	"runtime"
 	"time"
 )
 
@@ -68,17 +69,16 @@ func (c *Miner) GetRate() int64 {
 }
 
 func (c *Miner) getRate() int64 {
+	runtime.GOMAXPROCS(1)
+	defer runtime.GOMAXPROCS(runtime.NumCPU())
 	b := make([]byte, c.dataLength)
+
 	var count int64
-	q := false
-	go func() {
-		for !q {
-			c.rand.Read(b)
-			c.hashFunc(b)
-			count++
-		}
-	}()
-	time.Sleep(c.rateDuration)
-	q = true
+	end := time.Now().Add(c.rateDuration)
+	for time.Now().Before(end) {
+		c.rand.Read(b)
+		c.hashFunc(b)
+		count++
+	}
 	return count
 }
